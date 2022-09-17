@@ -34,6 +34,10 @@ This will add the necessary files to the application.
 - course_type
 - course_query
 
+Mount the engine at 
+```
+mount CmGraphql::Engine => "/cm-graphql"
+```
 
 And you are done, you can test out the pagination.
 
