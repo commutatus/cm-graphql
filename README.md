@@ -34,13 +34,6 @@ This will add the necessary files to the application.
 - course_type
 - course_query
 
-Include the paginator concern in your model. For example :-
-
-```
-class Example < ApplicationRecord
-  include Paginator
-end
-```
 
 And you are done, you can test out the pagination.
 
