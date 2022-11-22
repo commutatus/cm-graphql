@@ -1,49 +1,45 @@
-# Template-paging-api
+# CmGraphql
 
-## How to use this template
+This should help you to install graphql and setup the basics on any new rails application.
 
-1. Add [Kaminari](https://rubygems.org/gems/kaminari) gem in the gem file and run `bundle`
-2. Drap and drop the files from repo to your project.
-3. Include the paginator concern in your model. For example :-
+## Install
 
-```
-class Example < ApplicationRecord
-  include Paginator
-end
-```
-
-4. Create a list type object in `app/graphql/types/objects/example_list_type.rb`. For Example :-
+Add the gem to the Gemfile
 
 ```
-module Types::Objects
-  class ExampleListType < Types::BaseObject
-    graphql_name "ExampleListType"
-
-    field :paging, Types::Objects::Base::PagingType, null: true
-    field :data, [Types::Objects::ExampleType], null: false
-  end
-end
+gem 'cm-admin', git: 'https://github.com/commutatus/template-paging-api.git', branch: 'main'
 ```
 
-5. Call the `list` method in your query, it is inherited from paginator concern.
+## Setup
+
+If this is the first time graphql is getting added to the project, run the following generator
 
 ```
-module Queries::Example
-    include Types::BaseInterface
-
-    graphql_name "ExampleQueries"
-    field :examples, Types::Objects::ExampleListType, description: "Returns a list of examples", null: true do
-        argument :filters, Inputs::ExampleFilterInput, required: false
-        argument :paging, Inputs::Base::Paging, required: false
-    end
-
-    def examples(filters:, paging:)
-        Example.example_type_filter(filters&.example_type).distinct.list(paging&.per_page, paging&.page_no)
-    end
-end
+rails g cm_graphql:add_graphql
 ```
 
-6. And you are done, you can test out the pagination.
+This will run the graphql generator `graphql:install` and copy the graphql schema template.
+
+## Generator
+
+Another generator to help you get started with a basic list endpoint is 
+
+```
+rails g cm_graphql:list_api model_name
+rails g cm_graphql:list_api course
+```
+
+This will add the necessary files to the application.
+- course_list_type
+- course_type
+- course_query
+
+Mount the engine at 
+```
+mount CmGraphql::Engine => "/cm-graphql"
+```
+
+And you are done, you can test out the pagination.
 
 ## Explaination on how this works.
 
