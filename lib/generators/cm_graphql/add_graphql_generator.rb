@@ -8,6 +8,7 @@ module CmGraphql
       def add_graphql
         generate 'graphql:install'
         template 'graphql_schema.rb', "app/graphql/#{Rails.application.class.module_parent_name.underscore}_schema.rb"
+        gsub_file 'app/controllers/graphql_controller.rb', '# protect_from_forgery with: :null_session', 'protect_from_forgery with: :null_session'
       end
     end
   end
