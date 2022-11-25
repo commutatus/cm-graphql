@@ -1,13 +1,16 @@
 # CmGraphql
 
 This should help you to install graphql and setup the basics on any new rails application.
+- Adds Graphql gem and runs the graphql installer
+- Copies the grapqhl schema template which has the rescue block configured.
+- Certain files like grapqhl query, input and exceptions are inside the gem, which makes the listing of records easier.
 
 ## Install
 
 Add the gem to the Gemfile
 
 ```
-gem 'cm-admin', git: 'https://github.com/commutatus/template-paging-api.git', branch: 'main'
+gem 'cm-graphql'
 ```
 
 ## Setup
@@ -27,6 +30,26 @@ Another generator to help you get started with a basic list endpoint is
 ```
 rails g cm_graphql:list_api model_name
 rails g cm_graphql:list_api course
+
+
+# Sample grapqhl request
+
+query {
+	courses(paging: {
+		pageNo: 1
+		perPage: 100
+	}) {
+		paging {
+			currentPage
+			totalPages
+			totalCount
+		}	
+		data {
+			id
+      name
+		}
+	}
+}
 ```
 
 This will add the necessary files to the application.
