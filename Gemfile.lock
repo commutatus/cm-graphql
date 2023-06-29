@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cm-graphql (0.0.2)
+    cm-graphql (0.0.3)
       graphiql-rails (~> 1.8.0)
       graphql (~> 1.13.1)
       graphql-errors (~> 0.4.0)
