@@ -23,8 +23,10 @@ module Types::Objects::Base
     def url
       if object.class.eql?(ActiveStorage::Variant)
         Rails.application.routes.url_helpers.rails_representation_url(object)
-      else
+      elsif defined?(object.service_url)
         object.service_url
+      else
+        object.url
       end
     end
   end
