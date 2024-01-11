@@ -18,9 +18,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
   spec.required_ruby_version = '>= 3.0.0'
 
-  spec.add_runtime_dependency 'graphql', '~> 1.13.1'
-  spec.add_runtime_dependency 'graphql-errors', '~> 0.4.0'
-  spec.add_runtime_dependency 'graphql-rails_logger', '~> 1.2.3'
-  spec.add_runtime_dependency 'graphiql-rails', '~> 1.8.0'
-  spec.add_runtime_dependency 'kaminari', '~> 1.2.2'
+  spec.add_runtime_dependency 'graphiql-rails', '~> 1.9'
+  spec.add_runtime_dependency 'graphql', '~> 2.2', '>= 2.2.5'
+  spec.add_runtime_dependency 'graphql-rails_logger', '~> 1.2', '>= 1.2.4'
+  spec.add_runtime_dependency 'kaminari', '~> 1.2', '>= 1.2.2'
 end
