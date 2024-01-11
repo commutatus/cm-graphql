@@ -37,7 +37,7 @@ module Types::Objects::Base
              else
                Base64.strict_encode64(object.download)
              end
-      "data:image/#{object.content_type};base64,#{data}"
+      "data:#{object.content_type};base64,#{data}"
     end
   end
 end
