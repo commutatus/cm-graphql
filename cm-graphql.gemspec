@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.date          = '2022-09-14'
   spec.summary       = 'A gem to setup grapqhl basics like pagination, file upload'
   spec.description   = 'A gem to setup grapqhl basics like pagination, file upload'
-  spec.authors       = ['Anbazhagan Palani', 'Aditya Tiwari']
-  spec.email         = ['anbu@commutatus.com', 'taditya.tiwari007@gmail.com']
+  spec.authors       = ['Aditya Tiwari', 'Anbazhagan Palani']
+  spec.email         = ['taditya.tiwari007@gmail.com', 'anbu@commutatus.com']
   spec.homepage      = 'https://github.com/commutatus/template-paging-api'
   spec.license       = 'MIT'
   spec.files         = Dir.chdir(File.expand_path(__dir__)) do
