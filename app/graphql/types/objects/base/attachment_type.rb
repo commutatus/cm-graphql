@@ -3,6 +3,7 @@ module Types::Objects::Base
     field :id,          Int,      nil, null: false
     field :filename,    String,   nil, null: false
     field :url,         String,   nil, null: false
+    field :base64,      String,   nil, null: false
 
     def id
       if object.class.eql?(ActiveStorage::Variant)
@@ -28,6 +29,15 @@ module Types::Objects::Base
       else
         object.url
       end
+    end
+
+    def base64
+      data = if object.class.eql?(ActiveStorage::Variant)
+               Base64.strict_encode64(object.blob.download)
+             else
+               Base64.strict_encode64(object.download)
+             end
+      "data:image/#{object.content_type};base64,#{data}"
     end
   end
 end
