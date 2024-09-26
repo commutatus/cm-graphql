@@ -35,7 +35,7 @@ module Types::Objects::Base
     end
 
     def resize_image(width, height, attachment)
-      if width.present? && height.present? && attachment.attached?
+      if width.present? && height.present? && (attachment.attached? && attachment.content_type.include?('image'))
         attachment.variant(resize_to_fill: [width, height])
       else
         attachment
