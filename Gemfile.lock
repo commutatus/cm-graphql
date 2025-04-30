@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cm-graphql (0.0.7)
+    cm-graphql (0.0.8)
       graphiql-rails (>= 1.9)
       graphql (>= 2.2.5)
       graphql-rails_logger (>= 1.2.4)
