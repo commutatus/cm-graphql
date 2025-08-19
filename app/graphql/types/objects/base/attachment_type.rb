@@ -6,6 +6,8 @@ module Types::Objects::Base
       argument :resolution, Types::Inputs::ImageResolution, required: false, default_value: nil
     end
     field :base64,      String,   nil, null: false
+    field :byte_size,   Int,      nil, null: false
+    field :file_size,   String,   nil, null: false
 
     def id
       if object.class.eql?(ActiveStorage::Variant)
@@ -49,6 +51,20 @@ module Types::Objects::Base
                Base64.strict_encode64(object.download)
              end
       "data:#{object.content_type};base64,#{data}"
+    end
+
+    def byte_size
+      if object.class.eql?(ActiveStorage::Variant)
+        object.blob.byte_size
+      else
+        object.byte_size
+      end
+    end
+
+    def file_size
+      return nil if byte_size.blank?
+
+      ActiveSupport::NumberHelper.number_to_human_size(byte_size)
     end
   end
 end
