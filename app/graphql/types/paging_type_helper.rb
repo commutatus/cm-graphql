@@ -3,7 +3,8 @@ module Types
     def self.paging_type_for_model(model:, record_data_type: nil, graphql_type_name: nil)
       graphql_class_name = graphql_type_name.presence || "#{model}PagingType"
 
-      return const_get(graphql_class_name) if const_defined?(graphql_class_name)
+      existing_paging_type = Types::GraphqlTypeUtils.get_or_check_existing_constant(graphql_class_name)
+      return existing_paging_type if existing_paging_type
 
       Object.const_set(graphql_class_name, Class.new(Types::BaseObject) do
         graphql_name(graphql_class_name)
