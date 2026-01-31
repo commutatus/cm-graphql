@@ -16,16 +16,12 @@ module Mutations
       perform(**args)
     end
 
-    def perform(**_args)
-      raise NotImplementedError
-    end
-
     def self.recaptcha_action
       name.to_s.underscore
     end
 
     def self.recaptcha_minimum_score
-      0.5
+      MINIMUM_RECAPTCHA_SCORE
     end
   end
 end
