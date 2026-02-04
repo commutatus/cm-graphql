@@ -6,13 +6,13 @@ class RecaptchaVerifier
 
   def self.verify_v3(token:, action:, remote_ip: nil, minimum_score: 0.5)
     secret = Rails.application.credentials.dig(:gcp, :recaptcha_secret_key)
-    return false if secret.blank? || token.blank?
+    raise RecaptchaVerificationFailed, "Please cofigure recaptcha credentials, so it reads Rails.application.credentials.dig(:gcp, :recaptcha_secret_key)." if secret.blank? || token.blank?
 
     response = post_verify(secret:, token:, remote_ip:)
-    return false unless response.is_a?(Hash)
+    raise RecaptchaVerificationFailed, "Invalid response from recaptcha" unless response.is_a?(Hash)
 
-    return false unless response['success'] == true
-    return false if response['action'].present? && response['action'] != action
+    raise RecaptchaVerificationFailed, "Recaptcha verification failed" unless response['success'] == true
+    raise RecaptchaVerificationFailed, "Recaptcha action mismatch" if response['action'].present? && response['action'] != action
 
     score = response['score']
     return true if score.nil?
