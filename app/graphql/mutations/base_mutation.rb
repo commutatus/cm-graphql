@@ -5,8 +5,5 @@ module Mutations
     input_object_class Types::BaseInputObject
     object_class Types::BaseObject
 
-    def resolve(**args)
-      perform(**args)
-    end
   end
 end
