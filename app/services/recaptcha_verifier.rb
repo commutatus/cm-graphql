@@ -2,7 +2,7 @@ require 'net/http'
 require 'json'
 
 class RecaptchaVerifier
-  VERIFY_URL = URI('https://www.google.com/recaptcha/api/siteverify').freeze
+  VERIFY_URL = URI.parse('https://www.google.com/recaptcha/api/siteverify').freeze
 
   def self.verify_v3(token:, action:, remote_ip: nil, minimum_score: 0.5)
     secret = Rails.application.credentials.dig(:gcp, :recaptcha_secret_key)
