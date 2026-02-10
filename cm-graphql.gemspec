@@ -2,13 +2,13 @@
 
 Gem::Specification.new do |spec|
   spec.name          = 'cm-graphql'
-  spec.version       = '0.0.11'
+  spec.version       = '0.0.12'
   spec.date          = '2022-09-14'
   spec.summary       = 'A gem to setup grapqhl basics like pagination, file upload'
   spec.description   = 'A gem to setup grapqhl basics like pagination, file upload'
   spec.authors       = ['Anbazhagan Palani']
   spec.email         = ['anbu@commutatus.com']
-  spec.homepage      = 'https://github.com/commutatus/template-paging-api'
+  spec.homepage      = 'https://github.com/commutatus/cm-graphql'
   spec.license       = 'MIT'
   spec.files         = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
