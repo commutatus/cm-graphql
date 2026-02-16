@@ -2,19 +2,39 @@ require 'net/http'
 require 'json'
 
 class RecaptchaVerifier
-  VERIFY_URL = URI.parse('https://www.google.com/recaptcha/api/siteverify').freeze
+  API_HOST = 'recaptchaenterprise.googleapis.com'
 
   def self.verify_v3(token:, action:, remote_ip: nil, minimum_score: 0.5)
-    secret = Rails.application.credentials.dig(:gcp, :recaptcha_secret_key)
-    raise RecaptchaVerificationFailed, "Please cofigure recaptcha credentials, so it reads Rails.application.credentials.dig(:gcp, :recaptcha_secret_key)." if secret.blank? || token.blank?
+    project_id = Rails.application.credentials.dig(:gcp, :recaptcha_enterprise_project_id)
+    site_key = Rails.application.credentials.dig(:gcp, :recaptcha_site_key)
+    api_key = Rails.application.credentials.dig(:gcp, :recaptcha_api_key)
 
-    response = post_verify(secret:, token:, remote_ip:)
-    raise RecaptchaVerificationFailed, "Invalid response from recaptcha" unless response.is_a?(Hash)
+    if project_id.blank? || site_key.blank? || api_key.blank?
+      raise RecaptchaVerificationFailed,
+            'Please configure recaptcha enterprise credentials at Rails.application.credentials.dig(:gcp, :recaptcha_enterprise_project_id), :recaptcha_site_key, :recaptcha_api_key.'
+    end
 
-    raise RecaptchaVerificationFailed, "Recaptcha verification failed" unless response['success'] == true
-    raise RecaptchaVerificationFailed, "Recaptcha action mismatch" if response['action'].present? && response['action'] != action
+    raise RecaptchaVerificationFailed, 'Recaptcha token missing' if token.blank?
 
-    score = response['score']
+    response = create_assessment(project_id:, site_key:, api_key:, token:, action:, remote_ip:)
+    raise RecaptchaVerificationFailed, 'Invalid response from recaptcha' unless response.is_a?(Hash)
+
+    token_props = response['tokenProperties']
+    unless token_props.is_a?(Hash)
+      raise RecaptchaVerificationFailed, 'Invalid response from recaptcha'
+    end
+
+    unless token_props['valid'] == true
+      reason = token_props['invalidReason']
+      raise RecaptchaVerificationFailed, reason.present? ? "Recaptcha invalid token: #{reason}" : 'Recaptcha invalid token'
+    end
+
+    if token_props['action'].present? && token_props['action'] != action
+      raise RecaptchaVerificationFailed, 'Recaptcha action mismatch'
+    end
+
+    risk = response['riskAnalysis']
+    score = risk.is_a?(Hash) ? risk['score'] : nil
     return true if score.nil?
 
     score.to_f >= minimum_score.to_f
@@ -27,18 +47,44 @@ class RecaptchaVerifier
     true
   end
 
-  def self.post_verify(secret:, token:, remote_ip: nil)
-    request = Net::HTTP::Post.new(VERIFY_URL)
-    request.set_form_data({ secret:, response: token }.tap { |h| h[:remoteip] = remote_ip if remote_ip.present? })
+  def self.create_assessment(project_id:, site_key:, api_key:, token:, action:, remote_ip: nil)
+    uri = URI::HTTPS.build(
+      host: API_HOST,
+      path: "/v1/projects/#{project_id}/assessments",
+      query: URI.encode_www_form(key: api_key)
+    )
 
-    http = Net::HTTP.new(VERIFY_URL.host, VERIFY_URL.port)
+    event = {
+      token: token,
+      siteKey: site_key,
+      expectedAction: action
+    }
+    event[:userIpAddress] = remote_ip if remote_ip.present?
+
+    request = Net::HTTP::Post.new(uri)
+    request['Content-Type'] = 'application/json'
+    request.body = JSON.generate({ event: event })
+
+    http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
 
     raw_response = http.request(request)
-    JSON.parse(raw_response.body)
-  rescue JSON::ParserError, SocketError, Timeout::Error, Errno::ECONNRESET, Errno::ECONNREFUSED
-    false
+    body = raw_response.body.to_s
+
+    parsed_body = JSON.parse(body)
+
+    unless raw_response.is_a?(Net::HTTPSuccess)
+      error_message = parsed_body.dig('error', 'message')
+      raise RecaptchaVerificationFailed,
+            "Recaptcha enterprise HTTP #{raw_response.code}: #{error_message.presence || raw_response.message}"
+    end
+
+    parsed_body
+  rescue JSON::ParserError
+    raise RecaptchaVerificationFailed, "Recaptcha enterprise returned invalid JSON"
+  rescue SocketError, Timeout::Error, Errno::ECONNRESET, Errno::ECONNREFUSED
+    raise RecaptchaVerificationFailed, 'Recaptcha enterprise request failed'
   end
 
-  private_class_method :post_verify
+  private_class_method :create_assessment
 end
