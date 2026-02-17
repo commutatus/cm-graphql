@@ -2,18 +2,15 @@ module CmGraphql
   module Extensions
     class RecaptchaExtension < GraphQL::Schema::FieldExtension
       def apply
-        if field.resolver
-          field.resolver.argument(:recaptcha_token, String, required: true)
-        else
-          field.argument(:recaptcha_token, String, required: true)
-        end
+        input_arg = field.arguments["input"]
+        input_type = input_arg.type.unwrap
+        input_type.argument(:recaptcha_token, String, required: true)
       end
- 
-      def resolve(object:, arguments:, context:)
-        args_hash = arguments.to_h
-        input_hash = args_hash[:input].respond_to?(:to_h) ? args_hash[:input].to_h : nil
 
-        recaptcha_token = input_hash ? input_hash[:recaptcha_token] : args_hash[:recaptcha_token]
+      def resolve(object:, arguments:, context:, **_rest)
+        args_hash = arguments.to_h
+        input_hash = args_hash[:input].to_h
+        recaptcha_token = input_hash[:recaptcha_token]
 
         RecaptchaVerifier.verify_v3!(
           token: recaptcha_token,
@@ -22,13 +19,8 @@ module CmGraphql
           minimum_score: options[:minimum_score] || RECAPTCHA_MINIMUM_SCORE
         )
 
-        if input_hash
-          next_input = input_hash.dup
-          next_input.delete(:recaptcha_token)
-          yield(object, args_hash.merge(input: next_input))
-        else
-          yield(object, arguments.except(:recaptcha_token))
-        end
+        next_input = input_hash.except(:recaptcha_token)
+        yield(object, args_hash.except(:input).merge(input: next_input), nil)
       end
     end
   end
