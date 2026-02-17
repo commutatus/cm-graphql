@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cm-graphql (0.0.12)
+    cm-graphql (0.0.14)
       graphiql-rails (>= 1.9)
       graphql (>= 2.2.5)
       graphql-rails_logger (>= 1.2.4)
@@ -156,6 +156,7 @@ GEM
 PLATFORMS
   arm64-darwin-20
   arm64-darwin-22
+  arm64-darwin-23
   arm64-darwin-24
 
 DEPENDENCIES
