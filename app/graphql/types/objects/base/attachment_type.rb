@@ -8,6 +8,8 @@ module Types::Objects::Base
     field :base64,      String,   nil, null: false
     field :byte_size,   Int,      nil, null: false
     field :file_size,   String,   nil, null: false
+    field :variants, CmGraphql::Types::Objects::Base::ImageVariantsType, null: true,
+            description: 'Named image variant URLs.'
 
     def id
       if object.class.eql?(ActiveStorage::Variant)
@@ -65,6 +67,12 @@ module Types::Objects::Base
       return nil if byte_size.blank?
 
       ActiveSupport::NumberHelper.number_to_human_size(byte_size)
+    end
+
+    def variants
+      return nil if object.is_a?(ActiveStorage::Variant) || object.is_a?(ActiveStorage::VariantWithRecord)
+
+      CmGraphql::AttachmentVariantsService.image?(object) ? object : nil
     end
   end
 end
