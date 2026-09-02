@@ -2,8 +2,8 @@
 
 Gem::Specification.new do |spec|
   spec.name          = 'cm-graphql'
-  spec.version       = '0.0.14'
-  spec.date          = '2022-09-14'
+  spec.version       = '0.0.15'
+  spec.date          = '2026-09-02'
   spec.summary       = 'A gem to setup grapqhl basics like pagination, file upload'
   spec.description   = 'A gem to setup grapqhl basics like pagination, file upload'
   spec.authors       = ['Anbazhagan Palani']
