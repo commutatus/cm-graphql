@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Mutations
-  class AuthenticatedMutation < BaseMutation
+module Queries
+  class AuthenticatedQuery < Queries::BaseQuery
     def self.authorized?(_object, context)
       context[:current_user].present?
     end
